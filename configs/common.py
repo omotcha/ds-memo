@@ -1,7 +1,6 @@
-#!/usr/bin/python3
-# --*-- coding: utf-8 --*--
-# @Author: Liu Tengfei
-# @Email: liutengfei@chinadep.com
-# @Time: 2023/7/4 13:26
-# @File: common.py
-# @Description:
+import os
+
+configs_dir = os.path.abspath(os.path.dirname(__file__))
+project_dir = os.path.split(configs_dir)[0]
+models_dir = os.path.join(project_dir, "models")
+model_name = "simcse"
