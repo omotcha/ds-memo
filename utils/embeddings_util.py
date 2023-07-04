@@ -7,14 +7,14 @@ class SentenceTransformerUtil:
     def __init__(self):
         self.model = SentenceTransformer(os.path.join(models_dir, embedding_model_name))
 
-    def get_embeddings(self, sentence: str or list):
+    def encode(self, sentence: str or list):
         return self.model.encode(sentence)
 
 
 def test_get_sentence_transformer_embeddings():
     util = SentenceTransformerUtil()
     sentence = ["test sentence 1", "test sentence 2"]
-    print(len(util.get_embeddings(sentence)[0]))
+    print(len(util.encode(sentence)[0]))
 
 
 if __name__ == '__main__':

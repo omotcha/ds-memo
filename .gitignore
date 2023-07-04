@@ -15,5 +15,8 @@ contracts/build
 # models
 models
 
+# secrets
+secrets
+
 # .idea
 .idea
