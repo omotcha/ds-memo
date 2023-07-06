@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 contract MemoSolo {
 
     // version
-    string public constant VERSION = "0.0.1";
+    string public constant VERSION = "0.0.2";
 
     // memo for soloer: admin is contract creator
     address private admin;
@@ -16,19 +16,20 @@ contract MemoSolo {
     // memo item data structure
     struct MemoItem {
         uint256 updateTime;
+        uint256 id;
         string title;
         string content;
     }
 
     // storages
-    string[] private _titles;
-    mapping(string=>MemoItem) private _memos;
+    uint256[] private _ids;
+    mapping(uint256=>MemoItem) private _memos;
 
     ////////////////
     //   events   //
     ////////////////
 
-    event MemoUpdated(string title, string content);
+    event MemoUpdated(uint256 id, string title, string content);
 
     ///////////////////
     //   modifiers   //
@@ -38,8 +39,8 @@ contract MemoSolo {
         _;
     }
 
-    modifier memoExists(string memory title) {
-        require(_memos[title].updateTime > 0, "memo not found");
+    modifier memoExists(uint256 id) {
+        require(_memos[id].updateTime > 0, "memo not found");
         _;
     }
 
@@ -53,31 +54,33 @@ contract MemoSolo {
      * @param content memo content
      * @param overwrite if do overwrite
      */
-    function writeMemo(string memory title, string memory content, bool overwrite) public onlyOwner {
+    function writeMemo(uint256 id, string memory title, string memory content, bool overwrite) public onlyOwner {
         if(!overwrite){
-            require(_memos[title].updateTime == 0, "memo already exists");
+            require(_memos[id].updateTime == 0, "memo already exists");
         }
-        if(_memos[title].updateTime == 0){
-            _titles.push(title);
+        if(_memos[id].updateTime == 0){
+            _ids.push(id);
         }
-        _memos[title].updateTime = block.timestamp;
-        _memos[title].title = title;
-        _memos[title].content = content;
-        emit MemoUpdated(title, content);
+        _memos[id].updateTime = block.timestamp;
+        _memos[id].id = id;
+        _memos[id].title = title;
+        _memos[id].content = content;
+        emit MemoUpdated(id, title, content);
     }
 
 
     /////////////////
     //   getters   //
     /////////////////
-    function getTitles() public view onlyOwner returns (string[] memory){
-        return _titles;
+    function getIds() public view onlyOwner returns (uint256[] memory){
+        return _ids;
     }
 
-    function getMemoItemByTitle(string memory title) 
-    public view onlyOwner memoExists(title) 
-    returns (uint256 _updateTime, string memory _content){
-        _updateTime = _memos[title].updateTime;
-        _content = _memos[title].content;
+    function getMemoItemById(uint256 id) 
+    public view onlyOwner memoExists(id) 
+    returns (uint256 _updateTime, string memory _title, string memory _content){
+        _updateTime = _memos[id].updateTime;
+        _title = _memos[id].title;
+        _content = _memos[id].content;
     }
 }

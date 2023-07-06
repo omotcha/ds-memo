@@ -59,17 +59,6 @@ class FaissUtil:
         return result
 
 
-def test_search():
-    raw_query = "The identification of complex audio, including music, has proven to be complicated."
-    raw_data = ["this is raw text",
-                "you are right, but genshin impact is an open-world...",
-                "The proposed framework is very flexible, so it could use instrument models with various complexity—more advanced for those with weaker results and more straightforward for those with better results."]
-    embeddings_util = SentenceTransformerUtil()
-    embedded_data = embeddings_util.encode(raw_data)
-    faiss_util = FaissUtil(embedded_data, "example")
-    print(faiss_util.search(raw_query, 1)[0])
-
-
 def test_save():
     raw_data = ["this is raw text",
                 "you are right, but genshin impact is an open-world..."]
@@ -93,6 +82,7 @@ def test_add():
     new_item = "The proposed framework is very flexible, so it could use instrument models with various complexity—more advanced for those with weaker results and more straightforward for those with better results."
     util.add(new_item, size)
     print(util.search(raw_query, 1))
+    print(util.get_index_size())
 
 
 if __name__ == '__main__':

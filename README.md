@@ -26,6 +26,10 @@ client dev using python sdk
 
     `pip3 install git+https://git.chainmaker.org.cn/chainmaker/sdk-python.git`
 
+### About project setup and data preparation
+
+check {project dir}/setup.py, and set up project and secrets
+
 ### About deployment
 
 This is a demo deployed on Chainmaker, key steps will be described in {project dir}/docs/deploy.md (WIP).

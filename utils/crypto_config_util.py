@@ -1,5 +1,5 @@
 import os
-from configs.common import crypto_config_dir
+from configs.secrets import crypto_config_dir
 
 # this util is solely based on path walking, so make sure the file structure is correct
 
