@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 contract MemoSolo {
 
     // version
-    string public constant VERSION = "0.0.2";
+    string public constant VERSION = "0.0.3";
 
     // memo for soloer: admin is contract creator
     address private admin;
@@ -82,5 +82,15 @@ contract MemoSolo {
         _updateTime = _memos[id].updateTime;
         _title = _memos[id].title;
         _content = _memos[id].content;
+    }
+
+    function getAllTitlesWithIds() public view onlyOwner returns (string[] memory titles, uint256[] memory ids){
+        uint256 i;
+        uint256 len = _ids.length;
+        titles = new string[](len);
+        for(i=0;i<len;i++){
+            titles[i] = _memos[i].title;
+        }
+        ids = _ids;
     }
 }

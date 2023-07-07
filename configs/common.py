@@ -12,7 +12,7 @@ embedding_model_name = "simcse"
 vector_dim = 768
 
 # contract info (do not modify)
-default_contract_name = "memosolo_0_0_2"
+default_contract_name = "memosolo_0_0_3"
 
 # memo options
 override_memo = True

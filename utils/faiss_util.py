@@ -22,6 +22,13 @@ class FaissUtil:
         """
         self._index = faiss.read_index(self._tag)
 
+    def reset(self):
+        """
+        reset the util, the faiss store will not be affected
+        :return:
+        """
+        self._index = faiss.IndexIDMap(faiss.IndexFlatIP(vector_dim))
+
     def save(self):
         """
         save an index

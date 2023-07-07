@@ -1,3 +1,5 @@
+import os
+
 from eth_abi import decode_abi
 from utils.crypto_config_util import *
 from utils.faiss_util import FaissUtil
@@ -19,6 +21,7 @@ class Memo:
         self._conn = SimpleConn()
         self._conn.init_client(org, user)
         self._faiss = FaissUtil(tag)
+        self._tag = tag
 
         # faiss::load index
         if tag not in os.listdir(client_dir):
@@ -47,8 +50,14 @@ class Memo:
             [{"uint256": f"{memo_id}"}, {"string": f"{title}"}, {"string": f"{content}"}, {"bool": override_memo}]
         )
 
-    def search_memo(self, query: str):
+    def search_memo(self, query: str) -> list:
+        """
+        memo search
+        :param query:
+        :return:
+        """
         query_result = self._faiss.search(query, query_top_k)[0]
+        result = []
         for memo_id in query_result:
             if memo_id < 0:
                 break
@@ -57,19 +66,39 @@ class Memo:
                 "getMemoItemById",
                 [{"uint256": f"{memo_id}"}]).contract_result.result
             parse_result = decode_abi(("uint256", "string", "string"), bytes(invoke_result))
-            print(parse_result[2])
+            result.append(parse_result[2])
+        return result
 
     def sync(self):
         """
         sync titles from chain and reconstruct faiss store
-        WIP
         :return:
         """
-        pass
+        # remove faiss store if exists
+        if self._tag in os.listdir(client_dir):
+            os.remove(os.path.join(client_dir, self._tag))
+        # reset index
+        self._faiss.reset()
+
+        # fetch titles and ids from chain
+        invoke_result = self._conn.invoke_contract(
+            default_contract_name,
+            "getAllTitlesWithIds",
+            []
+        ).contract_result.result
+
+        # dev checkpoint: parse result should be like ((a,b,c),(1,2,3))
+        parse_titles, parse_ids = decode_abi(("string[]", "uint256[]"), bytes(invoke_result))
+        self._faiss.add(list(parse_titles), list(parse_ids))
+        self._faiss.save()
 
     def test_memo(self):
         # self.add_memo("About omotcha", "Omotcha means toy in Japanese")
-        self.search_memo("omotcha")
+        # self.add_memo("About Genshin Impact", "You are right, but Genshin Impact is an open-world action RPG...")
+        # search_result = self.search_memo("omotcha")
+        # search_result = self.search_memo("genshin, game start")
+        # print(search_result)
+        self.sync()
 
 
 if __name__ == '__main__':
