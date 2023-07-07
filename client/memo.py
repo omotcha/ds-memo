@@ -133,10 +133,12 @@ if __name__ == '__main__':
         if args.title is None:
             print("Error: Title missing.")
         else:
-            print(app.search_memo(args.title, args.top))
+            print(f"searching for {args.title}:")
+            search_result = app.search_memo(args.title, args.top)
+            for i in range(len(search_result)):
+                print(f"Rank {i+1}:")
+                print(search_result[i])
     elif args.task == "sync":
         app.sync()
     else:
         print("Error: Wrong task.")
-    print(args)
-
