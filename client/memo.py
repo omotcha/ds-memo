@@ -72,7 +72,7 @@ class Memo:
                 "getMemoItemById",
                 [{"uint256": f"{memo_id}"}]).contract_result.result
             parse_result = decode_abi(("uint256", "string", "string"), bytes(invoke_result))
-            result.append(parse_result[2])
+            result.append((parse_result[1], parse_result[2]))
         return result
 
     def sync(self):
@@ -136,8 +136,9 @@ if __name__ == '__main__':
             print(f"searching for {args.title}:")
             search_result = app.search_memo(args.title, args.top)
             for i in range(len(search_result)):
-                print(f"Rank {i+1}:")
-                print(search_result[i])
+                print(f"Rank: {i+1}")
+                print(f"Topic: {search_result[i][0]}")
+                print(f"Content: {search_result[i][1]}")
     elif args.task == "sync":
         app.sync()
     else:
