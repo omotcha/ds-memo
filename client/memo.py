@@ -1,5 +1,3 @@
-import os
-
 from eth_abi import decode_abi
 from utils.crypto_config_util import *
 from utils.faiss_util import FaissUtil
