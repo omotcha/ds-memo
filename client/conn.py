@@ -61,7 +61,7 @@ class SimpleConn:
             user=self._user,
             nodes=[self._node]
         )
-        print(f"Chain client ({self._client.get_chainmaker_server_version()}) initiated.")
+        # print(f"Chain client ({self._client.get_chainmaker_server_version()}) initiated.")
 
     def stop_client(self):
         """

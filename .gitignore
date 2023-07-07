@@ -27,3 +27,6 @@ client/test
 
 # pycache
 *.pyc
+
+# logs
+*.log

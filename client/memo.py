@@ -1,9 +1,16 @@
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import argparse
 from eth_abi import decode_abi
 from utils.crypto_config_util import *
 from utils.faiss_util import FaissUtil
 from client.conn import SimpleConn
 from configs.common import client_dir, override_memo, default_contract_name, query_top_k
+from configs.logging import LOGGING_CONFIG
 
+import logging.config
 
 class Memo:
     """
@@ -48,13 +55,14 @@ class Memo:
             [{"uint256": f"{memo_id}"}, {"string": f"{title}"}, {"string": f"{content}"}, {"bool": override_memo}]
         )
 
-    def search_memo(self, query: str) -> list:
+    def search_memo(self, query: str, top_k: int) -> list:
         """
         memo search
+        :param top_k:
         :param query:
         :return:
         """
-        query_result = self._faiss.search(query, query_top_k)[0]
+        query_result = self._faiss.search(query, top_k)[0]
         result = []
         for memo_id in query_result:
             if memo_id < 0:
@@ -100,7 +108,35 @@ class Memo:
 
 
 if __name__ == '__main__':
+    logging.config.dictConfig(LOGGING_CONFIG)
+    logger = logging.getLogger(__name__)
+
     test_org = get_orgs_name()[0]
     test_user = get_users_name(test_org)[0]
     app = Memo(test_org, test_user, "test")
-    app.test_memo()
+
+    parser = argparse.ArgumentParser(description="ds-memo")
+    parser.add_argument("task", choices=['add', 'query', 'sync'])
+    parser.add_argument("-t", "--title", type=str, default=None)
+    parser.add_argument("-c", "--content", type=str, default=None)
+    parser.add_argument("-k", "--top", type=int, default=1)
+    args = parser.parse_args()
+
+    if args.task == "add":
+        if args.title is None:
+            print("Error: Title missing.")
+        elif args.content is None:
+            print("Error: Content missing.")
+        else:
+            app.add_memo(args.title, args.content)
+    elif args.task == "query":
+        if args.title is None:
+            print("Error: Title missing.")
+        else:
+            print(app.search_memo(args.title, args.top))
+    elif args.task == "sync":
+        app.sync()
+    else:
+        print("Error: Wrong task.")
+    print(args)
+

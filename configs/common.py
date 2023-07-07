@@ -6,6 +6,7 @@ project_dir = os.path.split(configs_dir)[0]
 models_dir = os.path.join(project_dir, "models")
 secrets_dir = os.path.join(project_dir, "secrets")
 client_dir = os.path.join(project_dir, "client")
+logs_dir = os.path.join(project_dir, "logs")
 
 # embeddings options
 embedding_model_name = "simcse"
