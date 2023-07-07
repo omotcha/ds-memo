@@ -7,6 +7,13 @@ models_dir = os.path.join(project_dir, "models")
 secrets_dir = os.path.join(project_dir, "secrets")
 client_dir = os.path.join(project_dir, "client")
 
-# embeddings option
+# embeddings options
 embedding_model_name = "simcse"
 vector_dim = 768
+
+# contract info (do not modify)
+default_contract_name = "memosolo_0_0_2"
+
+# memo options
+override_memo = True
+query_top_k = 1

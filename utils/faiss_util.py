@@ -1,6 +1,6 @@
 import faiss
 import numpy as np
-from embeddings_util import SentenceTransformerUtil
+from utils.embeddings_util import SentenceTransformerUtil
 from configs.common import vector_dim
 
 
@@ -85,8 +85,22 @@ def test_add():
     print(util.get_index_size())
 
 
+def test_multi_add():
+    util = FaissUtil("test")
+    size = util.get_index_size()
+    print("before added: ", size)
+    new_item = "about multiple omotcha"
+    util.add(new_item, size)
+    size = util.get_index_size()
+    print("after added one: ", size)
+    util.add(new_item, size-1)
+    size = util.get_index_size()
+    print("after added twice: ", size)
+
+
 if __name__ == '__main__':
     # test_save()
     # test_load()
-    test_add()
+    # test_add()
+    test_multi_add()
 

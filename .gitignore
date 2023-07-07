@@ -23,3 +23,7 @@ secrets
 
 # test faiss output
 utils/test
+client/test
+
+# pycache
+*.pyc
