@@ -12,6 +12,7 @@ from configs.logging import LOGGING_CONFIG
 
 import logging.config
 
+
 class Memo:
     """
     the memo app logic
@@ -20,8 +21,9 @@ class Memo:
     def __init__(self, org: str, user: str, tag: str):
         """
         init memo app
-        :param org:
-        :param user:
+        :param org: fed chain organization
+        :param user: fed chain user
+        :param tag: tag is just the name of the faiss store, currently not stored and used on-chain
         """
         self._conn = SimpleConn()
         self._conn.init_client(org, user)
@@ -36,18 +38,26 @@ class Memo:
     def add_memo(self, title: str, content: str):
         """
         add a memo
-        Currently memo in faiss do not support content substitution,
-        it means that writing memos with same title would contaminate the faiss store.
-        A solution to this is to reconstruct faiss store using sync()
-        :param title:
-        :param content:
+        :param title: memo title
+        :param content: memo content
         :return:
         """
-        memo_id = self._faiss.get_index_size()
-        # add title to faiss store
-        self._faiss.load()
-        self._faiss.add(title, memo_id)
-        self._faiss.save()
+        all_titles, all_ids = self.get_all_titles_ids()
+        all_titles = list(all_titles)
+        all_ids = list(all_ids)
+        if title in all_titles:
+            if override_memo:
+                memo_id = all_ids[all_titles.index(title)]
+            else:
+                print("Title already exists.")
+                return
+        else:
+            memo_id = len(all_titles)
+            # add title to faiss store
+            self._faiss.load()
+            self._faiss.add(title, memo_id)
+            self._faiss.save()
+
         # add record to chain
         self._conn.invoke_contract(
             default_contract_name,
@@ -58,8 +68,8 @@ class Memo:
     def search_memo(self, query: str, top_k: int) -> list:
         """
         memo search
-        :param top_k:
-        :param query:
+        :param top_k: top k related search result
+        :param query: the query string
         :return:
         """
         query_result = self._faiss.search(query, top_k)[0]
@@ -86,7 +96,16 @@ class Memo:
         # reset index
         self._faiss.reset()
 
-        # fetch titles and ids from chain
+        # dev checkpoint: parse result should be like ((a,b,c),(1,2,3))
+        parse_titles, parse_ids = self.get_all_titles_ids()
+        self._faiss.add(list(parse_titles), list(parse_ids))
+        self._faiss.save()
+
+    def get_all_titles_ids(self) -> (tuple, tuple):
+        """
+        fetch titles and ids from chain
+        :return: parse result should be like ((a,b,c),(1,2,3))
+        """
         invoke_result = self._conn.invoke_contract(
             default_contract_name,
             "getAllTitlesWithIds",
@@ -94,17 +113,21 @@ class Memo:
         ).contract_result.result
 
         # dev checkpoint: parse result should be like ((a,b,c),(1,2,3))
-        parse_titles, parse_ids = decode_abi(("string[]", "uint256[]"), bytes(invoke_result))
-        self._faiss.add(list(parse_titles), list(parse_ids))
-        self._faiss.save()
+        return decode_abi(("string[]", "uint256[]"), bytes(invoke_result))
 
     def test_memo(self):
+        """
+        just a test interface
+        :return:
+        """
         # self.add_memo("About omotcha", "Omotcha means toy in Japanese")
         # self.add_memo("About Genshin Impact", "You are right, but Genshin Impact is an open-world action RPG...")
         # search_result = self.search_memo("omotcha")
         # search_result = self.search_memo("genshin, game start")
         # print(search_result)
-        self.sync()
+        # self.sync()
+        titles, ids = self.get_all_titles_ids()
+        print(f"current titles and ids:\n{titles}\n{ids}")
 
 
 if __name__ == '__main__':
@@ -116,7 +139,7 @@ if __name__ == '__main__':
     app = Memo(test_org, test_user, "test")
 
     parser = argparse.ArgumentParser(description="ds-memo")
-    parser.add_argument("task", choices=['add', 'query', 'sync'])
+    parser.add_argument("task", choices=['add', 'query', 'sync', 'test'])
     parser.add_argument("-t", "--title", type=str, default=None)
     parser.add_argument("-c", "--content", type=str, default=None)
     parser.add_argument("-k", "--top", type=int, default=1)
@@ -141,5 +164,7 @@ if __name__ == '__main__':
                 print(f"Content: {search_result[i][1]}")
     elif args.task == "sync":
         app.sync()
+    elif args.task == "test":
+        app.test_memo()
     else:
         print("Error: Wrong task.")

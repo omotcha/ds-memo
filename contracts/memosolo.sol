@@ -6,7 +6,7 @@ contract MemoSolo {
     // version
     string public constant VERSION = "0.0.3";
 
-    // memo for soloer: admin is contract creator
+    // memo for soloer: admin is contract creator and only user
     address private admin;
 
     constructor() {
