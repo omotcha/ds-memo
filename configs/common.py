@@ -17,4 +17,3 @@ default_contract_name = "memosolo_0_0_3"
 
 # memo options
 override_memo = True
-query_top_k = 1

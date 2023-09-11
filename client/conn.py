@@ -79,7 +79,7 @@ class SimpleConn:
     def test_simple_conn(self):
         from eth_abi import decode_abi
         # self.invoke_contract(default_contract_name, "getIds", [])
-        self.invoke_contract(default_contract_name, "writeMemo", [{"uint256": "0"}, {"string": "About Omotcha"}, {"string": "Omotcha means toy in Japan."}, {"bool": True}])
+        # self.invoke_contract(default_contract_name, "writeMemo", [{"uint256": "0"}, {"string": "About Omotcha"}, {"string": "Omotcha means toy in Japan."}, {"bool": True}])
         # self.invoke_contract(default_contract_name, "getIds", [])
         invoke_result = self.invoke_contract(default_contract_name, "getMemoItemById", [{"uint256": "0"}]).contract_result.result
         parse_result = decode_abi(("uint256", "string", "string"), bytes(invoke_result))

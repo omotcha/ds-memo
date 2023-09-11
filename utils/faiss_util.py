@@ -12,7 +12,7 @@ class FaissUtil:
         """
         # uses flat ip
         self._index = faiss.IndexIDMap(faiss.IndexFlatIP(vector_dim))
-        self._tag = tag if type(tag) is str else "default"
+        self._tag = tag if type(tag) is str else "admin_default"
         self._embeddings_util = SentenceTransformerUtil()
 
     def load(self):
@@ -24,7 +24,7 @@ class FaissUtil:
 
     def reset(self):
         """
-        reset the util, the faiss store will not be affected
+        reset the util-stored index, the faiss store will not be affected
         :return:
         """
         self._index = faiss.IndexIDMap(faiss.IndexFlatIP(vector_dim))

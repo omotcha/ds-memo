@@ -7,7 +7,7 @@ from eth_abi import decode_abi
 from utils.crypto_config_util import *
 from utils.faiss_util import FaissUtil
 from client.conn import SimpleConn
-from configs.common import client_dir, override_memo, default_contract_name, query_top_k
+from configs.common import client_dir, override_memo, default_contract_name
 from configs.logging import LOGGING_CONFIG
 
 import logging.config
@@ -28,6 +28,8 @@ class Memo:
         self._conn = SimpleConn()
         self._conn.init_client(org, user)
         self._faiss = FaissUtil(tag)
+        # future feature: multi-user tag logic
+        # self._faiss = FaissUtil(f"{user}_{tag}")
         self._tag = tag
 
         # faiss::load index
